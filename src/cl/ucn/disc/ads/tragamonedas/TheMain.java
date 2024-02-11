@@ -33,7 +33,7 @@ public final class TheMain {
         final Tragamonedas tg = new TragamonedasImpl(saldoInicial);
 
         // mientras tenga saldo para jugar
-        while (tg.getSaldo() != 0) {
+        while (tg.getSaldo() >= 0) {
 
             System.out.printf("Su saldo actual es de $%s. ¿Cuanto desea apostar? ", tg.getSaldo());
 
