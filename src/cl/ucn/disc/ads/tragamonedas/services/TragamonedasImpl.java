@@ -5,8 +5,11 @@
 package cl.ucn.disc.ads.tragamonedas.services;
 
 import cl.ucn.disc.ads.tragamonedas.model.Box;
+import cl.ucn.disc.ads.tragamonedas.model.Rueda;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Implementation of the Tragamonedas Game.
@@ -16,9 +19,18 @@ import java.util.List;
 public final class TragamonedasImpl implements Tragamonedas {
 
     /**
+     * one is for spin and other is for detect
+     */
+    private final int NUMERO_RUEDAS = 3;
+
+    /**
+     * The List of Rueda.
+     */
+    private final List<Rueda> ruedas;
+    /**
      * The internal Tragamonedas.
      */
-    private final Box box = new Box();
+
 
     /**
      * The saldo of user.
@@ -31,6 +43,10 @@ public final class TragamonedasImpl implements Tragamonedas {
      * @param saldo del Usuario.
      */
     public TragamonedasImpl(final int saldo) {
+        this.ruedas = Stream
+                .generate(Rueda::new)
+                .limit(NUMERO_RUEDAS)
+                .collect(Collectors.toList());
         if (saldo <= 0) {
             throw new IllegalArgumentException("No se puede tener saldo inicial cero o negativo");
         }
@@ -38,7 +54,23 @@ public final class TragamonedasImpl implements Tragamonedas {
     }
 
     /**
-     * {@inheritDoc}
+     * method to realize the bet
+     */
+    private int realizar(int valorApuesta) {
+        // protection!
+        if (valorApuesta <= 0) {
+            throw new IllegalArgumentException("No se puede realizar apuesta con valor cero o negativo");
+        }
+
+        // giro las ruedas
+        girarRuedas();
+
+        // realizo el calculo del premio
+        return getPremio(valorApuesta);
+    }
+
+    /**
+     * calculate the money
      */
     @Override
     public int realizarApuesta(final int apuesta) {
@@ -50,6 +82,7 @@ public final class TragamonedasImpl implements Tragamonedas {
 
         // tengo saldo
         if (apuesta > this.saldo) {
+
             throw new IllegalArgumentException("No se puede apostar mas del saldo disponible");
         }
 
@@ -57,7 +90,7 @@ public final class TragamonedasImpl implements Tragamonedas {
         this.saldo -= apuesta;
 
         // realizo la apuesta
-        int premio = box.realizarApuesta(apuesta);
+        int premio = realizar(apuesta);
 
         // sumo el saldo
         this.saldo += premio;
@@ -68,11 +101,13 @@ public final class TragamonedasImpl implements Tragamonedas {
     }
 
     /**
-     * {@inheritDoc}
+     * @return the current values of Ruedas.
      */
     @Override
     public List<Character> getRuedasValues() {
-        return box.getRuedasValues();
+        return ruedas.stream()
+                .map(Rueda::getChar)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -82,4 +117,37 @@ public final class TragamonedasImpl implements Tragamonedas {
     public int getSaldo() {
         return this.saldo;
     }
+
+    private void girarRuedas(){
+        // random throw.
+        ruedas.forEach(Rueda::girarAlAzar);
+    }
+
+    private int getPremio(int apuesta) {
+
+        // rule 1: all the values are equals
+        if (this.isValorRuedasIgualesDistintoDeCero()) {
+            return apuesta * this.ruedas.get(0).getValor();
+        }
+
+        // rule 2: count the ceros
+        int zeros = Math.toIntExact(this.ruedas.stream()
+                .filter(rueda -> rueda.getValor() == 0)
+                .count());
+
+        Box box = new Box();
+
+        return box.getPremio(zeros);
+    }
+
+    /**
+     * @return true if the values of all wheels are equal but non-zero
+     */
+    private boolean isValorRuedasIgualesDistintoDeCero() {
+        return this.ruedas
+                .stream()
+                .allMatch(rueda -> rueda.getValor() == this.ruedas.get(0).getValor() && rueda.getValor() != 0);
+    }
+
+
 }
