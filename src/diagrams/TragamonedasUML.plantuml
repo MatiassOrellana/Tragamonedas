@@ -1,0 +1,36 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Box {
+  + Box(): 
+  + getPremio(int): int
+}
+class Rueda {
+  + Rueda(): 
+  - valor: int
+  + girarAlAzar(): void
+   char: char
+   valor: int
+}
+interface Tragamonedas << interface >> {
+  + realizarApuesta(int): int
+   ruedasValues: List<Character>
+   saldo: int
+}
+class TragamonedasImpl {
+  + TragamonedasImpl(int): 
+  - saldo: int
+  - getPremio(int): int
+  - realizar(int): int
+  - girarRuedas(): void
+  + realizarApuesta(int): int
+   ruedasValues: List<Character>
+   saldo: int
+   valorRuedasIgualesDistintoDeCero: boolean
+}
+
+TragamonedasImpl  -[#008200,dashed]-^  Tragamonedas     
+@enduml

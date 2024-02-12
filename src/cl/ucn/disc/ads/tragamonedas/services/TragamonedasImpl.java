@@ -23,6 +23,8 @@ public final class TragamonedasImpl implements Tragamonedas {
      */
     private final int NUMERO_RUEDAS = 3;
 
+    private Box box;
+
     /**
      * The List of Rueda.
      */
@@ -135,7 +137,7 @@ public final class TragamonedasImpl implements Tragamonedas {
                 .filter(rueda -> rueda.getValor() == 0)
                 .count());
 
-        Box box = new Box();
+        box = new Box();
 
         return box.getPremio(zeros);
     }
