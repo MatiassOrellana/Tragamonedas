@@ -12,34 +12,13 @@ import java.util.stream.Stream;
  */
 public final class Box {
 
-    /**
-     * The number of Ruedas.
-     */
-    private final int NUMERO_RUEDAS = 3;
 
-    /**
-     * The List of Rueda.
-     */
-    private final List<Rueda> ruedas;
-
-
-    /**
-     * The Constructor.
-     */
     public Box() {
-
-        // construction
-        this.ruedas = Stream
-                .generate(Rueda::new)
-                .limit(NUMERO_RUEDAS)
-                .collect(Collectors.toList());
 
     }
 
 
-    /**
-     * calculates the value of the prize to be obtained from the value of the bet.
-     *
+    /*
      * @param apuesta to use.
      * @return the prize value.
      */
